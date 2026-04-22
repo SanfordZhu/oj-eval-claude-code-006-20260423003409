@@ -18,6 +18,9 @@ int game_state;
 int visit_count;
 int marked_mine_count;
 
+int game_over_r, game_over_c;
+bool game_over_by_mark;
+
 int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1};
 int dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 
@@ -27,6 +30,9 @@ void InitMap() {
   visit_count = 0;
   marked_mine_count = 0;
   game_state = 0;
+  game_over_r = -1;
+  game_over_c = -1;
+  game_over_by_mark = false;
 
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < columns; j++) {
@@ -74,6 +80,9 @@ void VisitBlock(int r, int c) {
   if (mine_map[r][c]) {
     visited[r][c] = true;
     game_state = -1;
+    game_over_r = r;
+    game_over_c = c;
+    game_over_by_mark = false;
     return;
   }
 
@@ -107,6 +116,9 @@ void MarkMine(int r, int c) {
     marked_mine_count++;
   } else {
     game_state = -1;
+    game_over_r = r;
+    game_over_c = c;
+    game_over_by_mark = true;
   }
 }
 
@@ -167,6 +179,8 @@ void PrintMap() {
       } else {
         if (game_state == 1 && mine_map[i][j]) {
           std::cout << "@";
+        } else if (game_state == -1 && game_over_by_mark && i == game_over_r && j == game_over_c) {
+          std::cout << "X";
         } else {
           std::cout << "?";
         }
